@@ -1,0 +1,20 @@
+<!doctype html>
+<html>
+	<body>
+		<input type="number" id="phone">
+		<input type="text" id="name"/>
+		<button onclick="register()">Register</button>
+	</body>
+	<script src="socket.io.js"></script>
+	<script>
+		var socket=io("http://localhost:8080");
+		function register(){
+			var phone=document.getElementById("phone").value;
+			var name=document.getElementById("name").value;
+			socket.emit("addUser",{"_id":phone,"name":name,"room":phone})
+		}
+		socket.on("response",function(data)){
+			alert(data);
+		}
+	</script>
+</html>

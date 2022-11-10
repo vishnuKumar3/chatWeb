@@ -1,33 +1,86 @@
 <!doctype html>
 	<html>
+	<head>
+		<style>
+			#msgBox{
+				width:500px;
+				padding:10px 5px;
+				height:max-content;
+				border:1px solid black;
+				margin-top:100px;
+			}
+			#right,#left{
+				width:100%;
+				border:1px solid transparent;
+				display:flex;
+				margin-bottom:10px;
+			}
+			#left{
+				justify-content:flex-start;
+			}
+			#right{
+				justify-content:flex-end;
+			}
+		</style>
+	</head>
 	<body>
 	<h1>hii</h1>
 	User:
-	<input type="text" id="user"/><br/>
+	<input type="number" id="sender"/><br/>
+	<button onclick="newUser()">newUser</button><br/>
+	sender:
+	<input type="number" id="sender1"/><br/>
+	Receiver:
+	<input type="number" id="client1"><br/>
+	<button onclick="fetchMsg()">fetchMsg</button><br/>
 	Message:
 	<input type="text" id="message"/><br/>	
 	Receiver
-	<input type="text" id="rec"/><br/>
-	<button onclick="fun()">submit</button>
+	<input type="number" id="client"/><br/>
+	<button onclick="startChat()">send</button>
 	<div id="msgBox">
 	</div>
 	</body>
 	<script src="socket.io.js"></script>
 	<script>
 	var socket = io("http://localhost:8080");
-	function fun(){
-		var name=document.getElementById("user").value;
-		var message=document.getElementById("message").value;		
-		var rec=document.getElementById("rec").value;
-		socket.emit("newUser",{"name":name,"message":message,"rec":rec});
+	
+	function fetchMsg(){
+		var sender=document.getElementById("sender1").value;
+		var client=document.getElementById("client1").value;		
+		socket.emit("fetchMsg",{"sender":sender,"client":client})
 	}
+	
+	function startChat(){
+		var sender=document.getElementById("sender").value;
+		var message=document.getElementById("message").value;		
+		var client=document.getElementById("client").value;
+		socket.emit("startChat",{"sender":sender,"message":message,"client":client});
+	}
+	
+	function newUser(){
+		var sender=document.getElementById("sender").value;
+		socket.emit("newUser",{"phone":sender})
+	}
+	
 	socket.on("connect", () => {
 	  console.log(socket.connected,"hii"); // true
 	});
 	socket.on("message",function(data){
-		//console.log(data,"HII");
-		var totalMsg=`From:${data["from"]}<br/>Message:${data["message"]}<br/>`;
-		document.getElementById("msgBox").innerHTML+=totalMsg;
+		console.log(data,"HII");
+		var sender=document.getElementById("sender1").value.toString();
+		var clients={};
+		clients[sender]="1";
+		var totalMsg="";
+		if(clients[data["from"]]!=undefined){		
+			//totalMsg+=`<div id="right">From:${data["from"]}<br/>Message:${data["message"]}<br/></div>`;
+			totalMsg+=`<div id="right">${data["message"]}</div>`;
+		}
+		else{
+			//totalMsg+=`<div id="left">From:${data["from"]}<br/>Message:${data["message"]}<br/></div>`;		
+			totalMsg+=`<div id="left">${data["message"]}</div>`;					
+		}
+		document.getElementById("msgBox").innerHTML+=totalMsg;		
 		
 	})
 	socket.on("disconnect", () => {
