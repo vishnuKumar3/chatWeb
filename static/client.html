@@ -38,12 +38,17 @@
 	Receiver
 	<input type="number" id="client"/><br/>
 	<button onclick="startChat()">send</button>
+	<button onclick="update()">update</button>	
 	<div id="msgBox">
 	</div>
 	</body>
 	<script src="socket.io.js"></script>
 	<script>
 	var socket = io("http://localhost:8080");
+	
+	function update(){
+		socket.emit("updateContacts",{})
+	}	
 	
 	function fetchMsg(){
 		var sender=document.getElementById("sender1").value;
@@ -60,7 +65,7 @@
 	
 	function newUser(){
 		var sender=document.getElementById("sender").value;
-		socket.emit("newUser",{"phone":sender})
+		socket.emit("newUser",{"phone":sender,"contacts":[]})
 	}
 	
 	socket.on("connect", () => {
