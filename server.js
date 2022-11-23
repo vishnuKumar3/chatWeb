@@ -1,7 +1,10 @@
 const express = require("express");
 const { createServer } = require("http");
+const bodyparser=require("body-parser");
 const { Server } = require("socket.io");
+const multer=require("multer");
 const app = express();
+const cors=require("cors");
 const httpServer = createServer(app);
 const io = new Server(httpServer, { /* options */ });
 
@@ -9,8 +12,13 @@ const user=require("./User.js");
 const db=require("./dbConnection.js");
 const sub=require("./sub.js");
 
-
+app.use(express.json());
+app.use(cors({
+	"origin":"*"
+}))
+app.use(bodyparser.urlencoded({"extended":false}))
 app.use(express.static("static"))
+app.use(multer({"dest":"./static/dp"}).any());
 app.use("/sub",sub);
 app.use("/user",user);
 
@@ -23,6 +31,7 @@ io.on("connection",function(socket){
 	
 	socket.on("startChat",function(data){
 		var clients=[data["sender"],data["client"]];
+		console.log(data);
 		console.log(data["sender"],typeof(parseInt(data["sender"])))
 		var insertedData={
 			"message":data["message"],
@@ -36,7 +45,7 @@ io.on("connection",function(socket){
 			if(err) console.log("message not inserted");
 			else{
 				console.log(data);
-				io.to([data["client"],data["sender"]]).emit("message",{"from":data["sender"],"message":data["message"]})
+				io.to([data["client"],data["sender"]]).emit("message",{"from":data["sender"],"msg":data["message"]})
 				let response="message sent successfully";
 				console.log(response);			
 			}
@@ -58,7 +67,7 @@ io.on("connection",function(socket){
 
 
 app.get("/",function(req,res){
-	res.sendFile(__dirname+"/static/client.html");
+	res.sendFile(__dirname+"/static/home.html");
 })
 httpServer.listen(8080,function(){
 	console.log("API connected");
