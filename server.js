@@ -1,4 +1,5 @@
 const express = require("express");
+const Auth=require("./Authentication.js");
 const { createServer } = require("http");
 const bodyparser=require("body-parser");
 const { Server } = require("socket.io");
@@ -21,6 +22,7 @@ app.use(express.static("static"))
 app.use(multer({"dest":"./static/dp"}).any());
 app.use("/sub",sub);
 app.use("/user",user);
+app.use("/auth",Auth);
 
 io.on("connection",function(socket){
 	//socket.user=data["name"];
@@ -67,7 +69,7 @@ io.on("connection",function(socket){
 
 
 app.get("/",function(req,res){
-	res.sendFile(__dirname+"/static/home.html");
+	res.sendFile(__dirname+"/static/signin.html");
 })
 httpServer.listen(8080,function(){
 	console.log("API connected");

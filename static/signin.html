@@ -1,0 +1,23 @@
+<html>
+	<form id="form">
+		<input type="text" name="_id"/>
+		<input type="text" name="password"/>
+		<input type="submit"/>
+	</form>
+	<script>
+		let ele=document.getElementById("form");
+		ele.onsubmit=async function(event){
+			event.preventDefault();
+			let formData=new FormData(ele);
+			var ret=await fetch("http://localhost:8080/auth/signin",{"method":"post","body":formData});
+			var res=await ret.json();
+			console.log(res);
+			alert(res["msg"]);
+			if(res["status"]){
+				localStorage.setItem("userPhone",document.getElementsByName("_id")[0].value);
+				window.open("home.html","_self");
+			}
+		}
+	</script>
+</html>
+

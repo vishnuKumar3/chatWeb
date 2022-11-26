@@ -59,8 +59,8 @@
 				display:none;
 			}
 			#part2 #user img:hover{
-				transform:scale(1.3);
-				transition:0.5s linear;
+				/*transform:scale(1.3);
+				transition:0.5s linear;*/
 			}			
 			#part2 #user #name{
 				z-index:0;
@@ -107,7 +107,6 @@
 		</style>
 	</head>
 	<body>
-		<button onclick="loadDp()">submit</button>
 		<div id="main">
 			<div id="part1">
 			
@@ -121,8 +120,8 @@
 				</div>
 				<div id="right">
 					<div id="displayMsg">
-						<div id="leftMsg"><p id="msg">hii,this is and this is very begining and is very beautiful and are these are very rare things</p></div>
-						<div id="rightMsg"><p id="msg">hello</p></div>
+						<!--<div id="leftMsg"><p id="msg">hii,this is and this is very begining and is very beautiful and are these are very rare things</p></div>
+						<div id="rightMsg"><p id="msg">hello</p></div>-->
 					</div>
 					<div id="typeMsg">
 						<input id="msgBox" type="text"/>
@@ -139,7 +138,8 @@
 		var loaded={};
 		var client="";		
 		window.onload=async function(){
-			user=parseInt(await window.prompt("enter id"));
+			user=parseInt(localStorage.getItem("userPhone"));
+			loadDp();
 		};
 		var socket=io("http://localhost:8080");
 		socket.on("connect",function(){
@@ -201,7 +201,7 @@
 			ret["data"].map((user)=>{
 				usersDisplay+=`<div onclick='fetchMsg(event)' id="user">
 							<span id="userId">${user["_id"]}</span>
-							<img id="dp" src="dp.png"/>
+							<img id="dp" src="dp.png"/>&nbsp
 							<p id="name">${user["name"]}</p>
 						</div>`
 			})
