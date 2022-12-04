@@ -51,7 +51,7 @@
 			#part2 #right{
 				width:80%;
 				border:1px solid transparent;
-				height:91%;
+				height:100%;
 			}
 			#part2 #left #user{
 				cursor:pointer;
@@ -66,10 +66,11 @@
 				padding:5px;
 				margin-bottom:5px;
 			}
+
 			#part2 #left #user:hover{
-				background:#00fa;
-				color:white;
-				transition:0.4s;
+				border-left:3px solid #00fa;
+				border-right:3px solid #00fa;
+				transition:0.1s;
 			}			
 			#part2 #user img{
 				z-index:0;
@@ -80,25 +81,44 @@
 			}
 			#part2 #user #userId{
 				display:none;
-			}
-			#part2 #user img:hover{
-				/*transform:scale(1.3);
-				transition:0.5s linear;*/
-			}			
+			}		
 			#part2 #user #name{
 				z-index:0;
 				font-size:20px;
 				font-weight:200;
 			}
-			#part2 #right #displayMsg{
-				background-size:100% 100%;
+			#part2 #right #header {
+				height:9%;
 				display:flex;
-				overflow-y:scroll;
-				flex-direction:column;
-				justify-content:flex-end;
-				height:100%;
-				border:2px solid transparent;
+				justify-content:flex-start;
+				align-items:center;
+				border-bottom:1px solid #0003;				
+				border-radius:5px;
+				padding:5px 10px;
 			}
+			#part2 #right #header img{
+				width:35px;
+				height:35px;
+				border-radius:100%;
+				margin-right:10px;
+			}		
+			#part2 #right #header p{
+				font-size:18px;
+			}				
+			#part2 #right #displayMsg{
+				flex:1;
+				display:flex;
+				flex-direction:column-reverse;
+				justify-content:flex-start;
+				height:82%;
+				border:2px solid transparent;
+				overflow-y:scroll;				
+			}
+			#part2 #right #msgContainer{
+				display:flex;
+				flex-direction:column;
+				height:max-content;
+			}			
 			#part2 #right #typeMsg{
 				height:9%;
 				border-top:1px solid #0003;
@@ -111,7 +131,6 @@
 			}	
 			#part2 #typeMsg #msgBox{
 				width:80%;
-				margin-right:20px;
 				padding:5px;
 				font-size:18px;
 				height:100%;
@@ -122,7 +141,12 @@
 				width:35px;
 				height:35px;
 				cursor:pointer;
-			}					
+				margin-left:5%;
+			}			
+			#part2 #typeMsg img:hover{
+				transform:scale(1.2);
+				transition:0.2s linear;				
+			}								
 			#part2 #right #leftMsg,#part2 #right #rightMsg{
 				width:100%;
 				border:1px solid transparent;				
@@ -145,6 +169,49 @@
 				background:#00fa;
 				color:white;
 			} 				
+			#part2 #addContact{
+				display:none;
+				flex-direction:column;
+				padding:10px 10px 20px 10px;
+				border:1px solid #0005;
+				border-radius:8px;
+				width:200px;
+				position:fixed;
+				top:0;
+				right:0;	
+				background:white;			
+			}
+			#part2 #addContact #section1{
+				display:flex;
+				justify-content:space-between;
+				align-items:center;
+				margin-bottom:10px;
+			}
+			#part2 #addContact #section1 img{
+				width:20px;
+				height:20px;
+				cursor:pointer;
+			}
+			#part2 #addContact #section1 img:hover{
+				transform:scale(1.3);
+				transition:0.2s linear;
+			}			
+			#part2 #addContact input{
+				width:100%;
+				padding:2px 8px;
+				font-size:15px;
+				height:30px;
+				border-radius:5px;
+				border:1px solid #0005;	
+			}		
+			@keyframes contactBox{
+				from{transform:scale(0.3) translate(0px,0px);display:none;opacity:0;}
+				to{transform:scale(1) translate(-10px,20px);;display:flex;opacity:1;}
+			}
+			@keyframes contactBoxDiminish{
+				to{transform:translate(0px,0px) scale(0.3);display:none;opacity:0;}
+				from{transform:translate(-10px,20px) scale(1);display:flex;opacity:1;}
+			}				
 		</style>
 	</head>
 	<body>
@@ -159,15 +226,32 @@
 						<p id="name">Username1</p>
 					</div>
 				</div>
+				<!--<div id="textBox">
+					<input type="text">
+				</div>-->
 				<div id="right">
+					<div id="header">
+						<img src="dp.png"/>
+						<p>Name</p>
+					</div>
 					<div id="displayMsg">
+						<div id="msgContainer">
 						<!--<div id="leftMsg"><p id="msg">hii,this is and this is very begining and is very beautiful and are these are very rare things</p></div>
 						<div id="rightMsg"><p id="msg">hello</p></div>-->
+						</div>
 					</div>
 					<div id="typeMsg">
 						<input id="msgBox" type="text"/>
-						<img onclick="sendMsg()" src="images/email.png"/>
+						<img title="Send" onclick="sendMsg()" src="icons/email.png"/>
+						<img title="Add Contact" src="icons/adduser.png" onclick="showAddContact()"/>
 					</div>				
+				</div>
+				<div id="addContact">
+					<div id="section1">				
+						<img title="Add Contact" onclick="addContact()" src="icons/adduser.png">				
+						<img title="close" style="width:17px;height:17px;" src="icons/close.png" onclick="hideAddContact()"/>				
+					</div>
+					<input type="number" id="contact">					
 				</div>
 			</div>
 		</div>
@@ -177,7 +261,8 @@
 
 		var user=1000;
 		var loaded={};
-		var client="";		
+		var client="";	
+		let selectedUser=0;	
 		window.onload=async function(){
 			user=parseInt(localStorage.getItem("userPhone"));
 			loadDp();
@@ -192,6 +277,7 @@
 		
 		function sendMsg(){
 			var message=document.getElementById("msgBox").value;
+			document.getElementById("msgBox").value="";			
 			socket.emit("startChat",{"sender":user,"client":client,"message":message});	
 		}
 		
@@ -208,15 +294,24 @@
 				//totalMsg+=`<div id="left">From:${data["from"]}<br/>Message:${data["message"]}<br/></div>`;		
 				totalMsg+=`<div id="leftMsg"><p id="msg">${data["msg"]}</p></div>`;					
 			}
-			document.getElementById("displayMsg").innerHTML+=totalMsg;		
+			loaded[client]+=totalMsg;
+			document.getElementById("msgContainer").innerHTML+=totalMsg;	
+			document.getElementById("displayMsg").scrollTop=0;												
 			
 		})			
 		
-		async function fetchMsg(event){
-			client=parseInt(event.target.children[0].innerText);
+		async function fetchMsg(clientTemp,index,name){
+			//alert(name);
+			document.querySelector("#part2 #right #header p").innerHTML=name;
+			document.querySelectorAll("#part2 #left #user")[selectedUser].style.background="#00000012";					
+			document.querySelectorAll("#part2 #left #user")[selectedUser].style.color="black";								
+			document.querySelectorAll("#part2 #left #user")[index].style.background="#00fa";			
+			document.querySelectorAll("#part2 #left #user")[index].style.color="white";						
+			selectedUser=index;
+			client=parseInt(clientTemp);
 			//alert(client);
 			if(loaded[client]!=undefined){
-				document.getElementById("displayMsg").innerHTML=loaded[client];
+				document.getElementById("msgContainer").innerHTML=loaded[client];
 				return null;
 			}
 			var ret=await fetch("http://localhost:8080/user/fetchMsg",{"method":"post","headers":{"Content-Type":"application/json"},"body":JSON.stringify({"sender":user,"client":client})});
@@ -230,8 +325,10 @@
 					html+=`<div id="leftMsg"><p id="msg">${v["msg"]}</p></div>`
 			})
 			loaded[client]=html;
-			document.getElementById("displayMsg").innerHTML=loaded[client];			
+			document.getElementById("msgContainer").innerHTML=loaded[client];						
 		}
+		
+		
 		
 		async function loadDp(){
 			var res=await fetch("http://localhost:8080/user/fetchContacts",{"method":"post","headers":{"Content-Type":"application/json"},"body":JSON.stringify({"user":user})});
@@ -239,9 +336,8 @@
 			var ret=await res.json();
 			console.log(ret);
 			var usersDisplay=""
-			ret["data"].map((user)=>{
-				usersDisplay+=`<div onclick='fetchMsg(event)' id="user">
-							<span id="userId">${user["_id"]}</span>
+			ret["data"].map((user,index)=>{
+				usersDisplay+=`<div onclick='fetchMsg(${user["_id"]},${index},"${user["name"]}")' id="user">
 							<img id="dp" src="dp.png"/>&nbsp
 							<p id="name">${user["name"]}</p>
 						</div>`
@@ -249,5 +345,24 @@
 			document.querySelector("#part2 #left").innerHTML=usersDisplay;
 			
 		}
+		
+		async function addContact(){
+			var contact= document.getElementById("contact").value;
+			var data={"user":user,"phone":parseInt(contact)}
+			var ret=await fetch("http://localhost:8080/user/addContact",{"method":"post","headers":{"Content-Type":"application/json"},"body":JSON.stringify(data)});
+			var res=await ret.json();
+			if(res["status"]){alert(res["msg"]);loadDp();}
+			else alert(res["msg"]);
+			document.getElementById("contact").value="";
+		}
+		
+		function showAddContact(){
+			document.getElementById("addContact").style.display="flex";		
+			document.getElementById("addContact").style.animation="contactBox 0.5s linear both";
+		}
+		function hideAddContact(){
+			document.getElementById("addContact").style.animation="contactBoxDiminish 0.5s linear both";
+		}		
 	</script>
 </html>
+

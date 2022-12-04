@@ -41,15 +41,18 @@ app.post("/addContact",function(req,res){
 		db.collection("users").find(identity).toArray(function(err,data1){
 			console.log(data1,"hello")
 			var contacts=data1[0].contacts;
+			if(contacts.includes(req.body.phone)){
+					return res.json({"status":false,"msg":"contact already existed"});				
+			}
 			contacts.push(req.body.phone);
 			db.collection("users").updateOne(identity,{$set:{"contacts":contacts}},function(err,data2){
 				if(err) {
 					console.log(err)
-					return res.json({"msg":"contacts doesnot added"})
+					return res.json({"status":false,"msg":"contacts doesnot added"})
 				}
 				else {
 					console.log(data2);
-					return res.json({"msg":"contact added successfully"});
+					return res.json({"status":true,"msg":"contact added successfully"});
 				}
 				
 			})
@@ -95,7 +98,7 @@ app.post("/fetchMsg",function(req,res){
 					var sender=i["from"]==1?clients[0]:clients[1];
 					ret.push({"msg":i["message"],"from":sender});
 				}
-				console.log(ret,clients);
+				//console.log(ret,clients);
 				return res.json({"status":true,"msg":"data fetched successfully","data":ret});
 			}
 		})	

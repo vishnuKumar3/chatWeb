@@ -46,7 +46,7 @@ io.on("connection",function(socket){
 		db.collection(`C${clients[0]}_${clients[1]}`).insertOne(insertedData,function(err,result){
 			if(err) console.log("message not inserted");
 			else{
-				console.log(data);
+				console.log(data,result);
 				io.to([data["client"],data["sender"]]).emit("message",{"from":data["sender"],"msg":data["message"]})
 				let response="message sent successfully";
 				console.log(response);			
@@ -65,8 +65,6 @@ io.on("connection",function(socket){
 		console.log("user disconnected",socket.id);
 	})
 })
-
-
 
 app.get("/",function(req,res){
 	res.sendFile(__dirname+"/static/signin.html");
