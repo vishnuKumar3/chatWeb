@@ -2,26 +2,8 @@
 <html>
 	<head>
 		<meta name="viewport" content="width=device-width,initial-scale=1.0"/>
+		<link rel="stylesheet" href="global.css"/>			
 		<style>
-			*{
-				margin:0;
-				padding:0;
-				box-sizing:border-box;
-				outline:none;
-				font-family:textFont;
-			}
-			:root{
-				scrollbar-width:none;
-			}
-			::-webkit-scrollbar{
-				width:0px;
-				border:1px solid #0003;
-				border-radius:20px;
-			}
-			@font-face{
-				src:url("fonts/Barlow-LightItalic.ttf");
-				font-family:textFont;
-			}
 			html,body{
 				height:100%;
 			}
@@ -104,6 +86,7 @@
 			}		
 			#part2 #right #header p{
 				font-size:18px;
+				text-transform:capitalize;
 			}				
 			#part2 #right #displayMsg{
 				flex:1;
@@ -300,9 +283,10 @@
 			
 		})			
 		
-		async function fetchMsg(clientTemp,index,name){
+		async function fetchMsg(clientTemp,index,name,dp){
 			//alert(name);
 			document.querySelector("#part2 #right #header p").innerHTML=name;
+			document.querySelector("#part2 #right #header img").src=dp;			
 			document.querySelectorAll("#part2 #left #user")[selectedUser].style.background="#00000012";					
 			document.querySelectorAll("#part2 #left #user")[selectedUser].style.color="black";								
 			document.querySelectorAll("#part2 #left #user")[index].style.background="#00fa";			
@@ -337,8 +321,8 @@
 			console.log(ret);
 			var usersDisplay=""
 			ret["data"].map((user,index)=>{
-				usersDisplay+=`<div onclick='fetchMsg(${user["_id"]},${index},"${user["name"]}")' id="user">
-							<img id="dp" src="dp.png"/>&nbsp
+				usersDisplay+=`<div onclick='fetchMsg(${user["_id"]},${index},"${user["name"]}","${user['dp']}")' id="user">
+							<img id="dp" src="${user["dp"]}"/>&nbsp
 							<p id="name">${user["name"]}</p>
 						</div>`
 			})
