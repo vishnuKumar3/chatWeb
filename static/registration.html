@@ -1,7 +1,6 @@
 <!doctype html>
 <html>
 	<head>
-		<meta name="viewport" content="width=device-width,initial-scale=1.0"/>
 		<link rel="stylesheet" href="global.css"/>	
 		<style>
 			#part1{
@@ -55,6 +54,9 @@
 				font-size:18px;
 				outline:none;
 			}
+			#form input[type="file"]{
+				margin-top:20px;
+			}
 			button{
 				margin-top:10px;
 				padding:5px;
@@ -66,54 +68,27 @@
 				color:white;
 				font-size:16px;
 			}
-			#form #hint{
-				border:1px solid transparent;
-			}
-			#form #hint p{
-				margin-top:20px;
-			}
-			#form #register{
-				margin-top:5px;
-				opacity:0;				
-				width:max-content;
-				animation-name:linkAnim;
-				animation-duration:1s;
-				animation-timing-function:linear;	
-				animation-fill-mode:both;			
-			}
-			#form #register a{
-				white-space:nowrap;
-			}
-			
 			@keyframes letterAnim{
 				from{color:red;width:0px;}
 				to{color:blue;width:500px;}
-			}
-			@keyframes linkAnim{
-				from{opacity:0;}
-				to{opacity:1;}
 			}	
 			@keyframes blinkAnim{
 				0%{opacity:0;}
 				50%{opacity:0.5;}
 				100%{opacity:1;}
-			}		
+			}				
 		</style>
 	</head>
 	<body>
-		<center><div id="mainHeading"><p>Let's Connect together...<span id="blink">|</span></p></div></center>
+		<center><div id="mainHeading"><p>Glow your profile with nice DP...<span id="blink">|</span></p></div></center>
 		<div id="part1">
 			<form id="form">
-				<p id="heading">Signin</p>
-				<p id="title">Phone number</p>
-				<input type="number" required name="_id"/>
-				<p id="title">password</p>
-				<input type="password" required name="password"/>
+				<p id="heading">Add more details</p>
+				<p id="title">Name</p>
+				<input type="text" required name="name"/>
+				<p id="title">Display picture</p>
+				<input type="file" required name="dp"/>
 				<button type="submit">submit</button>
-				<div id="hint">
-					<p>Not registered yet?</p>
-					<div id="register"><a href="signup.html">register here</a></div>
-				</div>
 			</form>
 		</div>
 	</body>
@@ -122,15 +97,11 @@
 		ele.onsubmit=async function(event){
 			event.preventDefault();
 			let formData=new FormData(ele);
-			var ret=await fetch("http://localhost:8080/auth/signin",{"method":"post","body":formData});
+			formData.append("_id",parseInt(localStorage.getItem("userPhone")));
+			var ret=await fetch("http://localhost:8080/user/addUser",{"method":"post","body":formData});
 			var res=await ret.json();
 			console.log(res);
 			alert(res["msg"]);
-			if(res["status"]){
-				localStorage.setItem("userPhone",document.getElementsByName("_id")[0].value);
-				window.open("home.html","_self");
-				ele.reset();				
-			}
 		}
 	</script>
 </html>

@@ -9,16 +9,18 @@ app.post("/addUser",function(req,res){
 		
 		console.log(data,req.body,req.files[0]);
 		data["_id"]=parseInt(data["_id"]);
+		
 		data["contacts"]=[];
 		db.collection('users').find({"_id":data["_id"]}).toArray(function(err,result){
-			if(result.length==0){
 				var oldpath=req.files[0];
 				var newpath="./static/dp/"+data["_id"].toString()+"."+oldpath["mimetype"].split("/")[1];
 				fs.rename(req.files[0].path,newpath,function(err){
 					if(err) console.log(err); 
 					else console.log("dp inserted")
 				});
-				data["dp"]="dp/"+data["_id"].toString()+"."+oldpath["mimetype"].split("/")[1];
+				data["dp"]="dp/"+data["_id"].toString()+"."+oldpath["mimetype"].split("/")[1];		
+				console.log(data);
+			if(result.length==0){
 				db.collection("users").insertOne(data,function(err){
 					if(err) console.log(err);
 					else{
@@ -29,9 +31,18 @@ app.post("/addUser",function(req,res){
 				})
 			}
 			else{
-				let response="user already existed";
-				console.log(response);
-				return res.json({"msg":response});				
+				delete data["contacts"];
+				console.log(data);
+				db.collection("users").updateOne({"_id":data["_id"]},{$set:data},function(err,data){
+					if(err) console.log(err);
+					else{
+						console.log(data);
+						let response="data updated successfully"
+						console.log(response);
+						return res.json({"msg":response});
+					}
+				})
+								
 			}
 		});	
 })
@@ -41,6 +52,10 @@ app.post("/addContact",function(req,res){
 		db.collection("users").find(identity).toArray(function(err,data1){
 			console.log(data1,"hello")
 			var contacts=data1[0].contacts;
+			db.collection("authenticate").find(identity).toArray(function(err,result){
+				if(result!=null) return res.json({"status":false,"msg":"contact doesnot registered"});
+			
+			else{
 			if(contacts.includes(req.body.phone)){
 					return res.json({"status":false,"msg":"contact already existed"});				
 			}
@@ -56,7 +71,10 @@ app.post("/addContact",function(req,res){
 				}
 				
 			})
+			}})
 		})	
+		
+	
 })
 
 app.post("/fetchContacts",function(req,res){
@@ -102,5 +120,16 @@ app.post("/fetchMsg",function(req,res){
 				return res.json({"status":true,"msg":"data fetched successfully","data":ret});
 			}
 		})	
+})
+
+
+app.post("/fetchUser",function(req,res){
+	console.log(req.body);
+	db.collection("users").findOne({"_id":req.body["_id"]},function(err,data){
+		if(err){console.log(err);return res.json({"status":false,"msg":"server side error"})}
+		else{
+			return res.json({"status":true,"msg":"data fetched successfully","data":data});
+		}
+	})
 })
 

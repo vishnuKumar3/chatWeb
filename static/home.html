@@ -2,7 +2,8 @@
 <html>
 	<head>
 		<meta name="viewport" content="width=device-width,initial-scale=1.0"/>
-		<link rel="stylesheet" href="global.css"/>			
+		<link rel="stylesheet" href="global.css"/>
+		<title>ChatWeb</title>
 		<style>
 			html,body{
 				height:100%;
@@ -15,8 +16,27 @@
 				flex-direction:column;
 				justify-content:center;
 			}
+			#part1{
+				width:100%;
+				display:flex;
+				justify-content:space-between;
+				align-items:center;
+				height:8%;
+				padding:0px 20px;
+				border:1px solid #0003;
+				border-radius:0px 0px 10px 10px;
+			}
+			#part1 #title{
+				font-size:30px;
+				font-weight:500;
+			}
+			#part1 #profileButton{
+				cursor:pointer;
+				width:35px;
+				height:35px;
+			}
 			#part2{
-				height:100%;
+				height:92%;
 				display:flex;
 				justify-content:center;
 			}
@@ -24,6 +44,7 @@
 				width:20%;
 				overflow-y:scroll;
 				border:1px solid #0003;
+				border-top-color:transparent;
 				border-radius:10px;
 				height:100%;
 				display:flex;
@@ -200,7 +221,8 @@
 	<body>
 		<div id="main">
 			<div id="part1">
-			
+				<p id="title">ChatWeb</p>
+				<a title="Edit Details" href="addDetails.html"><img id="profileButton" src="icons/adduser.png" /></a>
 			</div>
 			<div id="part2">
 				<div id="left">
@@ -260,8 +282,12 @@
 		
 		function sendMsg(){
 			var message=document.getElementById("msgBox").value;
-			document.getElementById("msgBox").value="";			
-			socket.emit("startChat",{"sender":user,"client":client,"message":message});	
+			document.getElementById("msgBox").value="";	
+			if(message.trim().length!=0){
+				socket.emit("startChat",{"sender":user,"client":client,"message":message});	
+				}
+			else
+			alert("message box is empty");
 		}
 		
 		socket.on("message",function(data){
