@@ -1,4 +1,4 @@
-<h1>ShowTime-An OTT platform</h1>
+<h1>ChatWeb-Chat Application</h1>
 <h2>Tech Stack Used:</h2>
 <h3>Frontend:</h3>
 <ul>
